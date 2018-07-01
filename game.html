@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Math Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <style scoped>
+    
+    .main{
+        width: 960px;
+        margin: auto;
+        text-align: center;
+        height: 650px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+    .score_table{
+        float: right;
+        position: relative;
+        right: 10px;
+    }
+    .game_card{
+        clear: both;
+        width: 600px;
+        height: 470px;
+        position: relative;
+        top: 50px;
+        box-shadow: 0 1px 5px 0 rgba(0,0,0,.4);
+ ;
+        margin: auto;
+    }
+    .game_card_top{
+        height: 70px;
+        box-shadow:  0 1px 5px 0 rgba(0,0,0,0.3);
+        padding: 10px;
+        text-align: center;
+    
+    }
+    #game_clock{
+        font-size: 50px;
+
+    }
+    #game_clock_time{
+        font-size: 40px;
+        position: relative;
+        bottom: 3px;
+        left: 5px;
+
+    }
+    #game_over_text{
+        font-size: 30px;
+        line-height: 50px;
+        position: relative;
+        bottom: 7px;
+        left: 10px;
+    }
+    #username_game{
+        font-size: 30px;
+    
+   
+    }
+    #baslat{
+       clear: both;
+       position: relative;
+       top:130px;
+       transform: scale(2.1);
+    }
+    .correctorno{
+        
+       display: none;
+       cursor: pointer;
+       transition-duration: 1s;
+
+    }
+    .detay_game_dogru_yanlis:hover .correctorno{
+       display: block;
+       transition-duration: 1s;
+    }
+    span.devam_goster{
+       text-decoration: underline;
+       cursor: pointer;
+    }
+    .soru{
+       margin-top:20px;
+    }
+    .soru span.sorum{
+       font-size: 70px;
+    }
+    .cevap{
+       position: relative;
+       width: 200px!important;
+       font-size: 40px!important;
+       top: 30px;
+       text-align: center;
+        
+    }
+    #gonder_cevap{
+        position: relative;
+        top: 40px;
+    }
+    .soru{
+        display: none;
+    }
+    #game_restarted{
+        position: relative;
+        transition:all 500ms;
+        font-size: 40px;
+        top:5px; 
+        cursor: pointer;
+        float: left;
+    }
+    #game_restarted:hover{
+        opacity: .7;
+        transition: all 600ms;
+    }
+    </style>
+</head>
+<body>
+    
+    <div class="main">
+        <div class="score_table">
+                <span id="username_game" class="flow-text">{{game_data.name}} | </span>  <span id="username_game" class="flow-text"> Pas Geçme Hakkın {{game_data.pas}} | Skor: {{game_data.score}} </span> <br> 
+                <div class="detay_game_dogru_yanlis">
+                   <span class="devam_goster"> Devamını Göster</span>
+                       <div class="correctorno">
+                            <span id="username_game" class="flow-text">Doğru Cevap: {{game_data.dogru}}  </span>
+                         <br>  
+                           <span class="flow-text" id="username_game"> Yanlış Cevap : {{game_data.yanlis}}</span>
+                       </div>
+                </div>
+        <!--    <button class="btn " v-on:click="score=score+10">Arttır</button>-->
+    </div>
+        <div class="game_card">
+            <div class="game_card_top">
+                    <i class="fa fa-repeat" v-on:click="restart_game" id="game_restarted"></i>        
+                <i class="fa fa-clock-o" id="game_clock"></i> <span id="game_clock_time" class="flow-text">{{game_data.sure}}</span>
+                <span v-if="game_data.sure === 0 " class="flow-text" style="position: relative; bottom: 10px; left: 10px;">Doğru Cevap = {{game_data.dogrusu}}</span>
+                <!-- <span id="game_over_text" v-if="game_data.gameover" class="flow-text"> | Oyun Bitti</span>-->
+                </div>
+                <div class="soru">
+                   <span class="flow-text sorum"> {{game_data.sy1}} {{game_data.operator}} {{game_data.sy2}}</span> <br>
+                   <input type="number" placeholder="Yanıtınız:" class="cevap" id="cevap" v-model="game_data.cevap">
+                   <br> <button class="btn" v-on:click="kontrol_et_dogrumu" id="gonder_cevap">Gönder</button>    
+                    <center>
+                        <br><br>  
+                   <br>  <button class="btn" id="pas_gec" v-on:click="pas_gec">PAS</button>
+                     <br> <br> <button class="btn" style="display: none;" id="reset" onclick="window.location= 'game.html';">Tekrar Oyna</button>          
+                    </center>
+                </div>
+                <center>
+                    <button v-bind:style="soru_al_style" class="btn" id="baslat" v-on:click="baslat">Soruyu Al</button>
+
+                </center>
+            </div>
+    </div>
+    <script>
+    var app = new Vue({
+        el: '.main',
+       
+        data: {
+          game_data:{
+              name: '',
+              score: 0,
+              cevap: '',
+              dogru: 0,
+              dogrusu:0,
+              dogrusu: 0,
+              yanlis : 0,
+              sure : 10,
+              sy1 : 0,
+              sy2 : 0,
+              operator: '',
+              gameover: false,
+              pas: 3
+          },
+          soru_al_style:{
+
+            display:'block'
+
+}      
+        },
+     mounted: function(){
+       
+       
+        var sy1 = Math.floor(Math.random() * 100) + 1;
+        var sy2 = Math.floor(Math.random() * 100) +1; 
+
+        var operator = Math.floor(Math.random() *3 ) +1;
+        switch(operator){
+            case 1:
+            this.game_data.operator = "+";
+            this.game_data.dogrusu = sy1+sy2;
+            break;
+            case 2:
+            this.game_data.operator = "-";
+            this.game_data.dogrusu = sy1-sy2;
+
+
+            break;
+            case 3:
+                this.game_data.operator = "*";
+                this.game_data.dogrusu = sy1*sy2;
+
+            break;
+            case 4:
+            this.game_data.operator = "/"; 
+            this.game_data.dogrusu = sy1/sy2;
+
+            break;
+        }
+
+        this.game_data.sy1 = sy1;
+        this.game_data.sy2 = sy2;
+         var deger = "";
+        while(deger == ""){
+         var deger = prompt("Adınızı Giriniz: ");
+                if(deger != ""){  
+                    this.game_data.name = deger;
+                }
+        }
+     },
+        methods:{
+            restart_game: function(){
+
+                window.location = 'game.html';
+
+            },
+         baslat: function(){
+            var element = document.getElementById("baslat");
+            element.parentNode.removeChild(element);    
+            document.querySelector(".soru").style.display = "block";
+
+            setInterval(function(){
+                    if(app.game_data.sure > 0){
+                        app.game_data.sure--;
+                    }else{
+
+                            app.game_data.gameover = true;                            
+                         /*   document.querySelector("#gonder_cevap").disabled = "false";
+                            document.querySelector("#reset").style.display = "block";*/
+                           setTimeout(function(){
+                            app.kontrol_et_dogrumu();
+                           },1500);
+                    }
+        
+            },1000);             
+         },
+         pas_gec: function(){
+           if(app.game_data.pas != 1){
+               app.game_data.pas -= 1;
+               app.game_data.sure = 10;
+               var sy1 = Math.floor(Math.random() * 100) + 1;
+        var sy2 = Math.floor(Math.random() * 100) +1; 
+            app.game_data.score -= 5;
+        var operator = Math.floor(Math.random() *3 ) +1;
+        switch(operator){
+            case 1:
+            app.game_data.operator = "+";
+            app.game_data.dogrusu = sy1+sy2;
+
+            break;
+            case 2:
+            app.game_data.operator = "-";
+            app.game_data.dogrusu = sy1-sy2;
+            
+            break;
+            case 3:
+            app.game_data.operator = "*";
+            app.game_data.dogrusu = sy1*sy2;
+
+            break;
+            case 4:
+            app.game_data.operator = "/";
+            app.game_data.dogrusu = sy1/sy2;
+
+            break;
+        }
+
+        app.game_data.sy1 = sy1;
+        app.game_data.sy2 = sy2;         
+         
+           }else{
+               app.game_data.pas = 0;
+               document.querySelector("#pas_gec").disabled = "false";
+           }
+         },
+         kontrol_et_dogrumu:function(){
+        app.game_data.sure = 10;
+             switch(app.game_data.operator){
+                case "+":
+                var sonuc = app.game_data.sy1 +  app.game_data.sy2;
+                
+                break;
+                case "-":
+             var sonuc = app.game_data.sy1 -  app.game_data.sy2;
+                
+                break;
+            case "*":
+            var sonuc = app.game_data.sy1 *  app.game_data.sy2;
+            
+            break;
+            case "/":
+            var sonuc = app.game_data.sy1 /  app.game_data.sy2;
+            
+            break;
+
+             }
+             if(app.game_data.cevap == sonuc){
+                app.game_data.dogru += 1;
+                app.game_data.score +=  10;
+             }else{
+                 /*alert("Doğrusu => " + sonuc);*/
+                 app.game_data.yanlis += 1;
+             }
+             app.game_data.cevap = "";
+         
+         /*
+
+         */        
+         var sy1 = Math.floor(Math.random() * 100) + 1;
+        var sy2 = Math.floor(Math.random() * 100) +1; 
+
+        var operator = Math.floor(Math.random() *3 ) +1;
+        switch(operator){
+            case 1:
+            app.game_data.operator = "+";
+            app.game_data.dogrusu = sy1+sy2;
+
+            break;
+            case 2:
+            app.game_data.operator = "-";
+            app.game_data.dogrusu = sy1-sy2;
+
+            break;
+            case 3:
+            app.game_data.operator = "*";
+            app.game_data.dogrusu = sy1*sy2;
+
+            break;
+            case 4:
+            app.game_data.operator = "/";
+            app.game_data.dogrusu = sy1/sy2;
+
+            break;
+        }
+
+        app.game_data.sy1 = sy1;
+        app.game_data.sy2 = sy2;         
+         
+/*           
+         */
+         }
+     
+        }
+    });
+
+    </script>
+</body>
+</html>

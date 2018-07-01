@@ -1,28 +1,78 @@
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Math Game</title>
+    <script src="https://cdn.rawgit.com/mattboldt/typed.js/master/lib/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <style scoped>
+            body{
+                padding: 0;
+                margin:  0;
+            }
 
-	<head>
-			<link rel="stylesheet" href="css/style.css">
-			<title>Yazılım Siten</title>
-	</head>
+            .main{
+                width: 900px;
+                margin: auto;
+                text-align: center;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-60%);
+            }
+            
+            #play_button{
+                font-size: 240px;
+                cursor: pointer;
+                transition-duration: 400ms;
+            }
+            #play_button:hover{
+                transition-duration: 600ms;
+                transform: scale(1.3);
+                color: #444;
+            }
+             
+             
+            #title_game{
+                font-size: 100px;
+            }    
+            
+            #author_game{
+                font-size: 30px;
+                display: block;
+                position: relative;
+                top: 20px;
+            }
 
-	<body>
-	
-		<div id="menu">
-		
-		<ul>
-		
-		<li><a href="#">Homepage</a></li>
-		<li><a href="#">Tecnology</a></li>
-		<li><a href="#">Social Media</a></li>
-		<li><a href="#">Game</a></li>
-		</ul>
-		
-		</div>
-		
-			<h1>Hello</h1>
-			
-	</body>	
 
-	
+            
+
+        </style>
+</head>
+<body>
+
+    <div class="main">
+       
+        <i id="play_button" class="fa fa-play" onclick="window.location = 'game.html';"></i>
+        <h1 class="flow-text" id="title_game">Math Game</h1>  <span style="font-size: 27px;" class="typed"></span>  <br>
+        <span class="flow-text" id="author_game">Author: Aygün A.</span>
+    </div>
+ 
+  <script>
+   var typed = new Typed('.typed',{
+        strings: ['Başlamak için play tusuna basınız.',],
+        loop: true,
+        backDelay: 1000,
+        typeSpeed: 40,
+        backSpeed: 30,
+        
+    });
+  </script>
+</body>
 </html>
-
